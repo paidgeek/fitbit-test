@@ -1,6 +1,7 @@
 var mongoose = require("mongoose");
 
 var User = mongoose.model("User", {
+   refreshToken: String,
    aboutMe: String,
    age: Number,
    avatar: String,
@@ -24,7 +25,11 @@ var User = mongoose.model("User", {
 User.fromFitbitProfile = function(profile) {
    var data = profile._json.user;
 
+   console.log(profile);
+   console.log(data);
+
    return new User({
+      refreshToken: profile.refreshToken,
       aboutMe: data.aboutMe,
       age: data.age,
       avatar: data.avatar,
@@ -46,6 +51,4 @@ User.fromFitbitProfile = function(profile) {
    });
 };
 
-module.exports = {
-   User: User
-};
+module.exports = User;
