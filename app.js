@@ -7,13 +7,13 @@ var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 var session = require("express-session");
 var passport = require("passport");
-var credentials = require("./credentials");
 var Strategy = require("passport-fitbit-oauth2").FitbitOAuth2Strategy;
+var ws = require("nodejs-websocket");
+var config = require("./configuration");
 
 var User = require("./models/user");
-var db = require("./models/db");
 var mongoose = require("mongoose");
-mongoose.connect(db.url);
+mongoose.connect(config.mongodbUrl);
 
 var app = express();
 
@@ -28,7 +28,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(cookieParser());
 app.use(session({
-   secret: credentials.sessionSecret,
+   secret: config.sessionSecret,
    resave: true,
    saveUninitialized: false
 }));
@@ -38,10 +38,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use("fitbit", new Strategy({
-   clientID: credentials.clientId,
-   clientSecret: credentials.clientSecret,
-   scope: credentials.scope,
-   callbackURL: credentials.callbackURL
+   clientID: config.fitbitClientId,
+   clientSecret: config.fitbitClientSecret,
+   scope: config.fitbitScope,
+   callbackURL: config.fitbitCallbackURL
 }, function(accessToken, refreshToken, profile, cb) {
    User.findOne({
       fitbitId: profile.id
